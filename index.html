@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12-Week Power Clean Block</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>12-Week Power Clean Block</h1>
+    <p class="sub">高翻 · Power clean · All weights in LB · Light theme by default</p>
+  </div>
+  <button id="themeBtn" type="button" aria-label="Switch theme">🌙 Dark theme</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="dashboard">Dashboard</button>
+  <button class="tab" data-tab="train">Train</button>
+  <button class="tab" data-tab="prs">PRs</button>
+  <button class="tab" data-tab="records">Records</button>
+  <button class="tab" data-tab="movements">Movements</button>
+</nav>
+
+<main>
+  <!-- DASHBOARD -->
+  <section id="tab-dashboard" class="panel active">
+    <div class="card">
+      <h2>Your program</h2>
+      <p id="dashProgram"></p>
+      <label>Program start date (optional)
+        <input type="date" id="programStart">
+      </label>
+      <button id="saveStart" type="button">Save start date</button>
+      <button id="clearStart" type="button" class="secondary">Clear</button>
+      <p class="hint">Warm-up 15 min · Stretch 20 min · 3 main days per week + optional light technique day.</p>
+    </div>
+    <div class="grid" id="dashStats"></div>
+    <div class="card">
+      <h2>12-week progress</h2>
+      <p class="hint">Tap a week to jump to it in Train. A filled day means a session is logged for that week/day.</p>
+      <div id="progressGrid"></div>
+    </div>
+    <div class="card">
+      <h2>This week’s plan</h2>
+      <div id="weekPlan"></div>
+    </div>
+    <div class="card">
+      <h2>Weekly training load (lb)</h2>
+      <div id="loadChart"></div>
+    </div>
+    <div class="card">
+      <h2>Power clean PR progression</h2>
+      <div id="prChart"></div>
+    </div>
+    <div class="card">
+      <h2>Coach’s notes</h2>
+      <ul id="coachNotes"></ul>
+    </div>
+    <div class="card">
+      <h2>Latest session</h2>
+      <div id="latestSession"></div>
+    </div>
+  </section>
+
+  <!-- TRAIN -->
+  <section id="tab-train" class="panel">
+    <div class="card">
+      <h2>Train</h2>
+      <label>Week
+        <select id="trainWeek"></select>
+      </label>
+      <label>Day
+        <select id="trainDay">
+          <option value="0">Day 1 — Clean + front squat</option>
+          <option value="1">Day 2 — Pull + squat / deadlift</option>
+          <option value="2">Day 3 — Technique clean + press</option>
+        </select>
+      </label>
+      <label>Session date
+        <input type="date" id="sessionDate">
+      </label>
+      <p class="hint" id="trainHint"></p>
+    </div>
+    <div id="trainExercises"></div>
+    <div class="card">
+      <h2>Session check-in</h2>
+      <label>Sleep (hours) <input type="number" id="sleepH" min="0" max="14" step="0.5"></label>
+      <label>Soreness (0–10) <input type="number" id="soreness" min="0" max="10"></label>
+      <label>Session RPE (1–10) <input type="number" id="sessionRpe" min="1" max="10"></label>
+      <label><input type="checkbox" id="downgraded"> I downgraded today</label>
+      <label>Downgrade reason <input type="text" id="downgradeReason" placeholder="e.g. poor sleep, elbow sore"></label>
+      <label>Notes <textarea id="sessionNotes" rows="3"></textarea></label>
+      <button id="saveSession" type="button">Save / update today’s record</button>
+      <p class="hint" id="saveStatus"></p>
+      <p class="hint">Saving twice for the same date and training day updates the same record — it never creates a duplicate session.</p>
+    </div>
+  </section>
+
+  <!-- PRs -->
+  <section id="tab-prs" class="panel">
+    <div class="card">
+      <h2>Log a PR</h2>
+      <label>Lift
+        <select id="prLift"></select>
+      </label>
+      <label>PR (lb) <input type="number" id="prLb" min="0" step="2.5"></label>
+      <label>Date <input type="date" id="prDate"></label>
+      <button id="addPr" type="button">Add PR</button>
+      <p class="hint" id="prStatus"></p>
+      <p class="hint">If a new PR beats your working 1RM, it becomes the new working 1RM and every prescribed set recalculates from it. A PR at or below your working 1RM is kept as history only and never lowers your loads.</p>
+    </div>
+    <div class="card">
+      <h2>Set a working 1RM without logging a PR</h2>
+      <label>Lift <select id="rmLift"></select></label>
+      <label>Working 1RM (lb) <input type="number" id="rmLb" min="0" step="2.5"></label>
+      <button id="setRm" type="button">Set working 1RM</button>
+      <p class="hint">Use this for your starting maxes. After that, log PRs above — they will update this automatically.</p>
+    </div>
+    <div class="card">
+      <h2>Current bests</h2>
+      <div id="currentBests"></div>
+    </div>
+    <div class="card">
+      <h2>Recommended-weight ladder (50–110% of working 1RM)</h2>
+      <div id="ladder"></div>
+    </div>
+    <div class="card">
+      <h2>PR timeline</h2>
+      <div id="prTimeline"></div>
+    </div>
+  </section>
+
+  <!-- RECORDS -->
+  <section id="tab-records" class="panel">
+    <div class="card">
+      <h2>Session history</h2>
+      <p class="hint">One record per date + training day. Re-saving a day merges into that record.</p>
+      <div id="sessionHistory"></div>
+      <button id="exportBtn" type="button">Export data (JSON)</button>
+      <label class="filelabel">Import data (JSON) <input type="file" id="importFile" accept="application/json"></label>
+    </div>
+  </section>
+
+  <!-- MOVEMENTS -->
+  <section id="tab-movements" class="panel">
+    <div class="card">
+      <h2>Movements library</h2>
+      <p class="hint">Demo links open public coaching guides/videos in a new tab. No video files are hosted or copied here.</p>
+      <div id="movementList"></div>
+    </div>
+  </section>
+</main>
+
+<!-- REST TIMER MODAL -->
+<div id="timerModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Rest timer">
+  <div class="modal-box">
+    <h2>Rest timer</h2>
+    <p id="timerReason"></p>
+    <div id="timerDisplay">0:00</div>
+    <div class="timer-row">
+      <button type="button" data-preset="60">1:00</button>
+      <button type="button" data-preset="90">1:30</button>
+      <button type="button" data-preset="120">2:00</button>
+      <button type="button" data-preset="150">2:30</button>
+      <button type="button" data-preset="180">3:00</button>
+    </div>
+    <div class="timer-row">
+      <button type="button" id="timerMinus30">−30s</button>
+      <button type="button" id="timerPlus30">+30s</button>
+      <button type="button" id="timerPlus60">+1:00</button>
+    </div>
+    <div class="timer-row">
+      <button type="button" id="timerPause">Pause</button>
+      <button type="button" id="timerSkip" class="secondary">Skip / close</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Standalone version. Data is stored only in this browser (localStorage) unless you export it. It does not sync with any private Muse artifact. Stop if you feel sharp pain, your back rounds on deadlifts, or your elbows drop in the catch — technique first, PRs second.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
